@@ -1,2 +1,0 @@
-# jsonPractice
-json ile uygulama
