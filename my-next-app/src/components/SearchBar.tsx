@@ -16,7 +16,7 @@ export default function SearchBar({ onSearch }:any) {
                 placeholder="Ülke ara..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="border border-gray-300 rounded p-2 w-full"
+                className="border border-gray-300 rounded p-2 w-full text-black"
             />
             <button type="submit" className="mt-2 bg-blue-500 text-white rounded p-2 w-full">
                 Ara

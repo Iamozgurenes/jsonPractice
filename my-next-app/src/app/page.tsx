@@ -3,6 +3,7 @@
 import Card from "@/components/card";
 import SearchBar from "@/components/SearchBar";
 import { useState, useEffect } from 'react';
+import { FaCog, FaSun, FaMoon } from 'react-icons/fa'; // İkonu ekleyin
 
 export default function Home() {
     const [countries, setCountries] = useState<any[]>([]); // Ülkeleri saklamak için dizi
@@ -12,6 +13,8 @@ export default function Home() {
     const [totalCountries, setTotalCountries] = useState(0); // Toplam ülke sayısını saklamak için
     const [totalPopulation, setTotalPopulation] = useState(0); // Toplam nüfusu saklamak için
     const [continents, setContinents] = useState<string[]>([]); // Kıtaları saklamak için
+    const [theme, setTheme] = useState('light'); // Tema durumu için state ekleyin
+    const [dropdownOpen, setDropdownOpen] = useState(false); // Dropdown durumu için state ekleyin
 
     const fetchCountryData = async (query: string = '') => { // Varsayılan sorgu boş
         try {
@@ -56,9 +59,31 @@ export default function Home() {
         setLimit(limit + 20); // "Daha Fazla" butonuna tıklandığında 20 ülke daha yükle
     };
 
+    const toggleDropdown = () => {
+        setDropdownOpen(!dropdownOpen); // Dropdown'u aç/kapa
+    };
+
+    const changeTheme = (newTheme: string) => {
+        setTheme(newTheme); // Temayı değiştir
+        setDropdownOpen(false); // Dropdown'u kapat
+        // Tema değişikliği için gerekli CSS sınıflarını ekleyin
+        document.body.className = newTheme === 'dark' ? 'dark' : 'light'; // Koyu mod için sınıf ekleyin
+    };
+
+    const toggleTheme = () => {
+        const newTheme = theme === 'dark' ? 'light' : 'dark'; // Temayı değiştir
+        setTheme(newTheme);
+        document.body.className = newTheme; // Koyu mod için sınıf ekleyin
+    };
+
     return (
-        <div className="p-4">
-            <h1 className="text-2xl font-bold mb-4 text-center">Ülke Bilgileri</h1>
+        <div className={`p-4 ${theme}`}>
+            <h1 className="text-2xl font-bold mb-4 text-center flex justify-between items-center">
+                <span>{searchQuery ? 'Ülke Bilgileri' : 'Dünya Bilgileri'}</span>
+                <button onClick={toggleTheme} className="ml-2">
+                    {theme === 'dark' ? <FaSun /> : <FaMoon />} {/* Güneş veya Ay ikonunu göster */}
+                </button>
+            </h1>
             <SearchBar onSearch={handleSearchChange} /> {/* Arama fonksiyonunu güncelledik */}
             {error && <p className="text-red-500 text-center">{error}</p>}
             
