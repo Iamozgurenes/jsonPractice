@@ -9,6 +9,9 @@ export default function Home() {
     const [limit, setLimit] = useState(20); // Başlangıçta gösterilecek ülke sayısı 20
     const [error, setError] = useState('');
     const [searchQuery, setSearchQuery] = useState(''); // Arama sorgusunu saklamak için
+    const [totalCountries, setTotalCountries] = useState(0); // Toplam ülke sayısını saklamak için
+    const [totalPopulation, setTotalPopulation] = useState(0); // Toplam nüfusu saklamak için
+    const [continents, setContinents] = useState<string[]>([]); // Kıtaları saklamak için
 
     const fetchCountryData = async (query: string = '') => { // Varsayılan sorgu boş
         try {
@@ -17,7 +20,10 @@ export default function Home() {
                 throw new Error('Ülke bulunamadı');
             }
             const data = await res.json();
-            setCountries(data.slice(0, limit)); // İlk 'limit' kadar ülkeyi sakla
+            setCountries(data);
+            setTotalCountries(data.length); // Toplam ülke sayısını ayarla
+            setTotalPopulation(data.reduce((acc: number, country: any) => acc + country.population, 0)); // Toplam nüfusu hesapla
+            setContinents(Array.from(new Set(data.map((country: any) => country.region)))); // Kıtaları ayarla
             setError(''); // Hata mesajını sıfırla
         } catch (err: unknown) {
             if (err instanceof Error) {
@@ -55,12 +61,21 @@ export default function Home() {
             <h1 className="text-2xl font-bold mb-4 text-center">Ülke Bilgileri</h1>
             <SearchBar onSearch={handleSearchChange} /> {/* Arama fonksiyonunu güncelledik */}
             {error && <p className="text-red-500 text-center">{error}</p>}
+            
+            {/* Toplam ülke sayısı, kıtalar ve nüfus bilgilerini gösteren kart */}
+            <div className="mb-4 p-4 border rounded shadow">
+                <h2 className="text-xl font-bold">Dünya Bilgileri</h2>
+                <p>Toplam Ülke Sayısı: {totalCountries}</p>
+                <p>Toplam Nüfus: {totalPopulation.toLocaleString()}</p>
+                <p>Kıtalar: {continents.join(', ')}</p>
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {countries.slice(0, limit).map((country, index) => (
                     <Card key={index} data={country} />
                 ))}
             </div>
-            {limit < countries.length && (
+            {countries.length > limit && ( // Butonun görünürlüğünü kontrol et
                 <button onClick={loadMoreCountries} className="mt-4 p-2 bg-blue-500 text-white w-full">
                     Daha Fazla
                 </button>
